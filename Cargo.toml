@@ -1,6 +1,11 @@
 [package]
 name = "tree-graphviz"
+description = "Generate GraphViz DOT directed trees, based on an arbitrary tree structure."
+repository = "https://github.com/Siri-chan/tree-graphviz"
 version = "0.1.0"
 edition = "2021"
+license = "LGPL-3.0-or-later"
+categories = ["data-structures", "value-formatting"]
+keywords = ["graphviz", "directed-graph"]
 
 [dependencies]
