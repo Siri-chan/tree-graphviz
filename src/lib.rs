@@ -8,8 +8,11 @@ pub trait TreeVizNode where Self: ToString {
 }
 
 pub fn draw_nodes<T: TreeVizNode + Hash>(graph_name: &String, node: T) -> Result<String, ()> {
-    let out = format!("graph {} {{", graph_name);
-    Ok(format!("{}\n{}", out, draw_node(None, node)))
+    let mut out = format!("digraph {} {{", graph_name);
+    out = format!("{}\n{}", out, draw_node(None, node));
+    out = out.lines().map(|ln| ln.trim()).filter(|ln| *ln != ";").collect();
+    out.push('}');
+    Ok(out)
 }
 
 fn draw_node<T: TreeVizNode + Hash>(parent_hash: Option<u64>, node: T) -> String {
@@ -18,7 +21,7 @@ fn draw_node<T: TreeVizNode + Hash>(parent_hash: Option<u64>, node: T) -> String
     let hash = hasher.finish();
     let mut out = format!("{} [label=\"{}\"];\n", hash, sanitize(node.to_string()));
     if let Some(parent) = parent_hash {
-        out = format!("{} {} -> {};\n", out, parent, hash);
+        out = format!("{}{} -> {};\n", out, parent, hash);
     }
     for child in node.children() {
         out = format!("{}{};\n", out, draw_node(Some(hash), child));
