@@ -8,9 +8,9 @@
 //!     [`std::string::ToString`], [`std::hash::Hash`] and [`TreeVizNode`].
 //! Currently, this crate does not support recursive elements within a tree.
 //! An optional `"async"` feature is available and provides an async variant of
-//!     `draw_nodes` - `draw_nodes_async`, which will recurse through a 
+//!     `draw_nodes` - `draw_nodes_async`, which will recurse through a
 //!     node's children concurrently.
-//! This introduces a dependency on the `futures` crate, but may be quicker, 
+//! This introduces a dependency on the `futures` crate, but may be quicker,
 //!     especially if `futures` is already in your dependency tree.
 
 use std::{
@@ -102,7 +102,11 @@ pub async fn draw_nodes_async<T: TreeVizNode + Hash>(graph_name: &str, node: T) 
         .filter(|c| *c != ' ' && c.is_ascii())
         .collect();
     let mut out = format!("digraph {} {{", graph_name);
-    out = format!("{}\n{}", out, draw_node_async(None, node, Arc::new(Mutex::new(HashSet::new()))).await);
+    out = format!(
+        "{}\n{}",
+        out,
+        draw_node_async(None, node, Arc::new(Mutex::new(HashSet::new()))).await
+    );
     out = out
         .lines()
         .map(|ln| ln.trim())
@@ -111,7 +115,6 @@ pub async fn draw_nodes_async<T: TreeVizNode + Hash>(graph_name: &str, node: T) 
     out.push('}');
     out
 }
-
 
 #[cfg(feature = "async")]
 async fn draw_node_async<T: TreeVizNode + Hash>(
@@ -134,9 +137,18 @@ async fn draw_node_async<T: TreeVizNode + Hash>(
     if let Some(parent) = parent_hash {
         out = format!("{}{} -> {};\n", out, parent, hash);
     }
-    let promises = node.children().into_iter().map(|child| {
-        draw_node_async(Some(hash), child, hashes.clone())
-    });
-    out = format!("{}{}", out, join_all(promises).await.into_iter().map(|s| format!("{};\n", s)).collect::<String>());
+    let promises = node
+        .children()
+        .into_iter()
+        .map(|child| draw_node_async(Some(hash), child, hashes.clone()));
+    out = format!(
+        "{}{}",
+        out,
+        join_all(promises)
+            .await
+            .into_iter()
+            .map(|s| format!("{};\n", s))
+            .collect::<String>()
+    );
     out
 }
