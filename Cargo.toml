@@ -13,3 +13,6 @@ futures = { version = "0.3", optional = true }
 
 [features]
 async = ["dep:futures"]
+
+[package.metadata.docs.rs]
+rustc-args = ["--features", "async"]
