@@ -9,3 +9,7 @@ categories = ["data-structures", "value-formatting"]
 keywords = ["graphviz", "directed-graph"]
 
 [dependencies]
+futures = { version = "0.3", optional = true }
+
+[features]
+async = ["dep:futures"]
