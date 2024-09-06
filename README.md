@@ -10,7 +10,7 @@ This crate aims to be dependency free, and fast.
 An optional `"async"` feature is available and provides an async variant of
     `draw_nodes` - `draw_nodes_async`, which will recurse through a 
     node's children concurrently.
-This introduces a dependency on `futures`, but may be quicker, especially if
+This introduces a dependency on the `futures` crate, but may be quicker, especially if
     futures is already in your dependency tree.
 
 If you want to run tests on this crate, use `cargo test --all-features`, 
